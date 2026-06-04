@@ -1,0 +1,127 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Email Logs' %}
+
+{% block content %}
+    {% if counts.all %}
+        {% set filterParams = filter ? { status: filter } : {} %}
+        <div class="flex" style="margin-bottom: 16px; gap: 8px; justify-content: space-between; flex-wrap: wrap;">
+            <div class="btngroup" role="group" aria-label="Filter logs">
+                <a href="{{ url('courier/logs') }}" class="btn{{ filter is null ? ' active' }}">All ({{ counts.all }})</a>
+                <a href="{{ url('courier/logs', { status: 'sent' }) }}" class="btn{{ filter == 'sent' ? ' active' }}">Sent ({{ counts.sent }})</a>
+                <a href="{{ url('courier/logs', { status: 'failed' }) }}" class="btn{{ filter == 'failed' ? ' active' }}">Failed ({{ counts.failed }})</a>
+                <a href="{{ url('courier/logs', { status: 'test' }) }}" class="btn{{ filter == 'test' ? ' active' }}">Tests ({{ counts.test }})</a>
+            </div>
+            <div class="flex" style="gap: 8px;">
+                <button id="courier-clear-tests" type="button" class="btn">Clear test sends</button>
+                <button id="courier-clear-all" type="button" class="btn">Clear all logs</button>
+            </div>
+        </div>
+
+        {% if logs|length %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Template</th>
+                    <th>Channel</th>
+                    <th>Recipient</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td><a href="{{ url('courier/logs/' ~ log.id) }}">{{ log.dateSent|datetime('short') }}</a></td>
+                        <td><code>{{ log.templateHandle }}</code>{% if log.isTest %} <span class="label">Test</span>{% endif %}</td>
+                        <td>{{ log.channel ?? '—' }}</td>
+                        <td>{{ log.recipient }}</td>
+                        <td>{{ log.subject }}</td>
+                        <td>
+                            {% if log.status == 'sent' %}
+                                <span class="status green"></span> Sent
+                            {% elseif log.status == 'failed' %}
+                                <span class="status red"></span> Failed
+                            {% elseif log.status == 'skipped' %}
+                                <span class="status"></span> Skipped
+                            {% else %}
+                                <span class="status orange"></span> {{ log.status|title }}
+                            {% endif %}
+                        </td>
+                        <td class="thin">
+                            <button type="button" class="delete icon courier-log-delete" title="Delete" data-id="{{ log.id }}"></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if total > limit %}
+            <div class="flex flex-nowrap" style="margin-top: 16px; justify-content: center;">
+                {% if page > 1 %}
+                    <a href="{{ url('courier/logs', filterParams|merge({ page: page - 1 })) }}" class="btn">Previous</a>
+                {% endif %}
+                <span class="btn disabled">Page {{ page }} of {{ (total / limit)|round(0, 'ceil') }}</span>
+                {% if page * limit < total %}
+                    <a href="{{ url('courier/logs', filterParams|merge({ page: page + 1 })) }}" class="btn">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% else %}
+            <p>
+                {% if filter == 'failed' %}
+                    No failed sends. Nice.
+                {% elseif filter == 'test' %}
+                    No test sends logged.
+                {% else %}
+                    No {{ filter }} entries. <a href="{{ url('courier/logs') }}">Show all</a>
+                {% endif %}
+            </p>
+        {% endif %}
+
+        {% js %}
+            (function() {
+                function clearLogs(scope, message) {
+                    if (!window.confirm(message)) { return; }
+                    Craft.sendActionRequest('POST', 'courier/logs/clear', { data: { scope: scope } })
+                        .then(function(r) {
+                            Craft.cp.displayNotice((r.data && r.data.message) || 'Logs cleared.');
+                            window.location.reload();
+                        })
+                        .catch(function() { Craft.cp.displayError('Couldn’t clear logs.'); });
+                }
+
+                var clearAll = document.getElementById('courier-clear-all');
+                if (clearAll) {
+                    clearAll.addEventListener('click', function() {
+                        clearLogs('all', 'Delete ALL log entries? This can’t be undone.');
+                    });
+                }
+
+                var clearTests = document.getElementById('courier-clear-tests');
+                if (clearTests) {
+                    clearTests.addEventListener('click', function() {
+                        clearLogs('tests', 'Delete all test-send log entries?');
+                    });
+                }
+
+                document.querySelectorAll('.courier-log-delete').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        if (!window.confirm('Delete this log entry?')) { return; }
+                        Craft.sendActionRequest('POST', 'courier/logs/delete', { data: { id: btn.getAttribute('data-id') } })
+                            .then(function(r) {
+                                Craft.cp.displayNotice((r.data && r.data.message) || 'Deleted.');
+                                var row = btn.closest('tr');
+                                if (row) { row.parentNode.removeChild(row); }
+                            })
+                            .catch(function() { Craft.cp.displayError('Couldn’t delete entry.'); });
+                    });
+                });
+            })();
+        {% endjs %}
+    {% else %}
+        <p>No emails have been sent yet.</p>
+    {% endif %}
+{% endblock %}

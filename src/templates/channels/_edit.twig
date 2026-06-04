@@ -1,0 +1,93 @@
+{% extends '_layouts/cp' %}
+{% import '_includes/forms' as forms %}
+
+{% set title = config.id ? config.name : 'New channel' %}
+{% set fullPageForm = true %}
+
+{% set crumbs = [
+    { label: 'Courier', url: url('courier') },
+    { label: 'Channels', url: url('courier/channels') },
+] %}
+
+{% block content %}
+    <input type="hidden" name="action" value="courier/channels/save">
+    {{ redirectInput('courier/channels') }}
+    {% if config.id %}<input type="hidden" name="id" value="{{ config.id }}">{% endif %}
+
+    {{ forms.textField({
+        first: true,
+        label: 'Name',
+        id: 'name',
+        name: 'name',
+        value: config.name,
+        required: true,
+        errors: config.getErrors('name'),
+    }) }}
+
+    {{ forms.textField({
+        label: 'Handle',
+        id: 'handle',
+        class: 'code',
+        name: 'handle',
+        value: config.handle,
+        required: true,
+        errors: config.getErrors('handle'),
+        instructions: 'Auto-generated from the name if left blank.',
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Channel type',
+        id: 'type',
+        name: 'type',
+        value: config.type,
+        options: typeOptions,
+        instructions: 'How this channel delivers. Its settings appear below.',
+    }) }}
+
+    <hr>
+
+    <div id="channel-settings">
+        {% if channelType %}
+            {{ channelType.getSettingsHtml(config)|raw }}
+        {% endif %}
+    </div>
+
+    {% if config.getErrors('settings') %}
+        <ul class="errors">
+            {% for error in config.getErrors('settings') %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <hr>
+
+    {% js %}
+        new Craft.HandleGenerator('#name', '#handle');
+
+        (function() {
+            var typeSelect = document.getElementById('type');
+            var container = document.getElementById('channel-settings');
+            if (!typeSelect || !container) return;
+
+            typeSelect.addEventListener('change', function() {
+                container.innerHTML = '<div class="spinner"></div>';
+                Craft.sendActionRequest('POST', 'courier/channels/type-settings', {
+                    data: { type: typeSelect.value }
+                }).then(function(response) {
+                    container.innerHTML = response.data.settingsHtml || '';
+                    if (response.data.headHtml) { Craft.appendHeadHtml(response.data.headHtml); }
+                    if (response.data.bodyHtml) { Craft.appendBodyHtml(response.data.bodyHtml); }
+                    Craft.initUiElements($(container));
+                }).catch(function() {
+                    container.innerHTML = '<p class="error">Couldn’t load settings for this type.</p>';
+                });
+            });
+        })();
+    {% endjs %}
+
+    {{ forms.lightswitchField({
+        label: 'Enabled',
+        id: 'enabled',
+        name: 'enabled',
+        on: config.enabled,
+    }) }}
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Log Detail' %}
+
+{% block content %}
+    <table class="data fullwidth">
+        <tbody>
+            <tr>
+                <th style="width: 150px;">Date Sent</th>
+                <td>{{ log.dateSent|datetime }}</td>
+            </tr>
+            <tr>
+                <th>Template</th>
+                <td><code>{{ log.templateHandle }}</code></td>
+            </tr>
+            <tr>
+                <th>Recipient</th>
+                <td>{{ log.recipient }}</td>
+            </tr>
+            <tr>
+                <th>Subject</th>
+                <td>{{ log.subject }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>
+                    {% if log.status == 'sent' %}
+                        <span class="status green"></span> Sent
+                    {% elseif log.status == 'failed' %}
+                        <span class="status red"></span> Failed
+                    {% else %}
+                        <span class="status orange"></span> {{ log.status|title }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if log.errorMessage %}
+                <tr>
+                    <th>Error</th>
+                    <td><pre style="white-space: pre-wrap; background: #fef2f2; padding: 8px; border-radius: 4px;">{{ log.errorMessage }}</pre></td>
+                </tr>
+            {% endif %}
+            {% if log.elementId %}
+                <tr>
+                    <th>Element</th>
+                    <td>
+                        {% set element = craft.app.elements.getElementById(log.elementId, log.elementType) %}
+                        {% if element %}
+                            <a href="{{ element.cpEditUrl }}">{{ element.title ?? '#' ~ log.elementId }}</a>
+                        {% else %}
+                            #{{ log.elementId }} (deleted)
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="buttons" style="margin-top: 16px;">
+        <a href="{{ url('courier/logs') }}" class="btn">Back to Logs</a>
+
+        {% if canResend %}
+            <button id="resend-btn" class="btn submit" data-log-id="{{ log.id }}">Resend</button>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% if canResend %}
+{% js %}
+document.getElementById('resend-btn').addEventListener('click', function() {
+    if (!confirm('Resend this email to {{ log.recipient|e('js') }}?')) {
+        return;
+    }
+
+    var btn = this;
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    Craft.sendActionRequest('POST', 'courier/logs/resend', {
+        data: {
+            logId: btn.dataset.logId,
+        }
+    }).then(function(response) {
+        if (response.data.success) {
+            Craft.cp.displayNotice(response.data.message);
+        } else {
+            Craft.cp.displayError(response.data.error || 'Failed to resend.');
+        }
+    }).catch(function() {
+        Craft.cp.displayError('Failed to resend email.');
+    }).finally(function() {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    });
+});
+{% endjs %}
+{% endif %}

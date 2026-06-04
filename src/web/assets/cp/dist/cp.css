@@ -1,0 +1,529 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Courier — control-panel styles for the Trigger edit screen.
+
+   These classes replace the inline style="" attributes that used to live in
+   the field-layout UI elements (ConditionsField, VariablesHintField,
+   PreviewField). The rendered DOM structure is unchanged — only the styling
+   moved here.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Shared ─────────────────────────────────────────────────────────────── */
+
+/* A group separated from the fields above by a top hairline. */
+.courier-field-divider {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hairline-color);
+}
+
+/* A lighter variant of the divider (smaller top margin). */
+.courier-field-divider--tight {
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hairline-color);
+}
+
+/* Small uppercase section heading. */
+.courier-heading {
+    margin: 0 0 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--light-text-color);
+}
+
+.courier-heading--flush {
+    margin-top: 0;
+}
+
+/* A native <details>/<summary> disclosure styled as a link control. */
+.courier-disclosure {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--link-color);
+}
+
+/* A status dot inline on a disclosure summary. */
+.courier-status-inline {
+    margin-right: 6px;
+}
+
+/* ── ConditionsField ────────────────────────────────────────────────────── */
+
+.courier-cond-intro {
+    margin: 0 0 12px;
+}
+
+.courier-cond-detail {
+    margin-top: 10px;
+}
+
+/* "and" connector between the builder and the Twig escape hatch. */
+.courier-cond-connector {
+    position: relative;
+    text-align: center;
+    margin: 14px 0;
+    border-top: 1px solid var(--hairline-color);
+    line-height: 0;
+}
+
+.courier-cond-connector-label {
+    font-size: 12px;
+    padding: 0 8px;
+    background: var(--gray-050, #f3f3f4);
+}
+
+/* Spacing lives on the slot wrappers: core's `.pane:first-child
+   { margin-block-start: 0 !important }` nukes any margin set on the block
+   itself now that it's the sole child of a slot. :not(:empty) keeps the
+   vacated slot from leaving a stray gap after the block relocates. */
+#courier-cond-slot-main:not(:empty) {
+    margin-top: 24px;
+}
+
+#courier-cond-slot-date:not(:empty) {
+    margin: 18px 0;
+}
+
+/* Spinner shown while the builder swaps for a new event's element type. */
+.courier-cond-spinner {
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--light-text-color);
+}
+
+/* ── VariablesHintField ─────────────────────────────────────────────────── */
+
+.courier-hint-intro {
+    margin: 0 0 10px;
+    color: var(--medium-text-color);
+}
+
+.courier-hint-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.courier-hint-chip {
+    padding: 3px 8px;
+    background: var(--gray-100);
+    border: 1px solid var(--hairline-color);
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.courier-hint-note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--light-text-color);
+}
+
+.courier-hint-content {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--hairline-color);
+    border-radius: 6px;
+}
+
+/* ── PreviewField ───────────────────────────────────────────────────────── */
+
+.courier-preview-instructions {
+    margin: 0 0 12px;
+}
+
+.courier-preview-instructions--flush {
+    margin: 0;
+}
+
+.courier-preview-element-select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.courier-preview-status {
+    font-size: 13px;
+}
+
+/* Send-test result states (set by JS). */
+.courier-preview-status--ok {
+    color: #0b8235;
+}
+
+.courier-preview-status--err {
+    color: #cf1124;
+}
+
+/* Selected sample element label (set by JS). */
+.courier-preview-selected-name {
+    font-weight: 500;
+}
+
+/* "nothing resolved" placeholder inside a header value (set by JS). */
+.courier-preview-unresolved {
+    color: #9ca3af;
+}
+
+.courier-preview-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.courier-preview-hint {
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+/* Note shown when selected channels won't use the HTML body. */
+.courier-preview-html-note {
+    margin: 0 0 10px;
+}
+
+.courier-preview-mode-toggles {
+    display: none;
+}
+
+.courier-preview-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+/* Render errors, shown as a monospace block. */
+.courier-preview-error {
+    display: none;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: rgba(220, 38, 38, 0.06);
+    border: 1px solid rgba(220, 38, 38, 0.28);
+    border-radius: 6px;
+    color: #b91c1c;
+    font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Email-style header rows (To / Cc / Bcc / Subject). */
+.courier-preview-header-row {
+    display: none;
+    margin: 3px 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.courier-preview-header-label {
+    display: inline-block;
+    min-width: 64px;
+    color: var(--light-text-color);
+    font-weight: 600;
+}
+
+.courier-preview-header-value {
+    color: #374151;
+}
+
+.courier-preview-headers {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.025);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.courier-preview-iframe {
+    width: 100%;
+    border: 0;
+    min-height: 140px;
+    display: block;
+}
+
+.courier-preview-resize-handle {
+    position: absolute;
+    top: 0;
+    right: -7px;
+    width: 14px;
+    height: 100%;
+    cursor: col-resize;
+}
+
+.courier-preview-iframe-wrap {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #fff;
+}
+
+.courier-preview-width-label {
+    display: none;
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.courier-preview-frame-container {
+    display: none;
+    padding: 16px;
+}
+
+.courier-preview-text-container {
+    display: none;
+    white-space: pre-wrap;
+    padding: 16px;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* One message card: header band on top, body below. */
+.courier-preview-message {
+    display: none;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.courier-preview-empty {
+    padding: 8px 4px;
+}
+
+/* Skeleton card — mirrors .courier-preview-message so the loading state looks
+   like the email that's about to appear (header band over a white body). */
+.courier-preview-sk-card {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+/* Skeleton header row: a real To/Subject label + a shimmer line as the value. */
+.courier-preview-header-row--sk {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.courier-preview-header-row--sk .courier-sk-line {
+    margin: 0;
+    height: 10px;
+}
+
+/* White body area inside the skeleton card — mimics the rendered email block. */
+.courier-preview-skeleton-body {
+    padding: 16px;
+}
+
+.courier-preview-skeleton-hint {
+    text-align: center;
+    font-size: 13px;
+    margin: 18px 0 0;
+}
+
+.courier-preview-header-h2 {
+    margin: 0 0 12px;
+}
+
+.courier-preview-header-h2--flush {
+    margin: 0;
+}
+
+.courier-preview-pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.courier-preview-pane {
+    margin-top: 14px;
+}
+
+/* Skeleton shimmer placeholder. */
+.courier-sk-line {
+    height: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+    background: #e6e6e9;
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.65) 50%, rgba(255, 255, 255, 0) 100%);
+    background-size: 160px 100%;
+    background-repeat: no-repeat;
+    background-position: -160px 0;
+    animation: courier-sk 1.3s ease-in-out infinite;
+}
+
+.courier-sk-btn {
+    height: 36px;
+    width: 150px;
+    border-radius: 6px;
+    margin-top: 20px;
+    background: #e6e6e9;
+}
+
+@keyframes courier-sk {
+    to {
+        background-position: calc(100% + 160px) 0;
+    }
+}
+
+/* Render button: spin the refresh icon while a render is in flight. */
+@keyframes courier-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.courier-render-spin::before {
+    display: inline-block;
+    animation: courier-spin 0.7s linear infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+    .courier-sk-line,
+    .courier-sk-btn {
+        background-color: #2a2a3a;
+    }
+}
+
+/* OR-combined condition groups (spike): each group is a native builder block,
+   stacked with an "or" connector between them. */
+.courier-cond-group {
+    position: relative;
+    padding: 12px 12px 12px 16px;
+    border: 1px solid #c5cbd4;
+    border-left: 3px solid #9aa4b2;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(31, 41, 55, 0.08);
+}
+
+.courier-group-head {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 6px;
+    min-height: 18px;
+}
+
+.courier-cond-connector--or {
+    margin: 20px 0;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #5f6b7c;
+}
+
+.courier-cond-connector--or span {
+    padding: 3px 12px;
+    border: 1px solid #c5cbd4;
+    border-radius: 10px;
+    background: #eef0f3;
+}
+
+.courier-add-group {
+    margin-top: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .courier-cond-group {
+        background: #2a2a36;
+        border-color: #454556;
+        border-left-color: #6b7280;
+    }
+    .courier-cond-connector--or {
+        color: #9aa4b2;
+    }
+    .courier-cond-connector--or span {
+        background: #20202a;
+        border-color: #454556;
+    }
+}
+
+/* ── Date-trigger config (ConditionsField date mode) ───────────────────── */
+
+.courier-date-pane {
+  margin-bottom: 16px;
+}
+
+.courier-date-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Fields flush inside their row; the rows themselves carry the rhythm */
+.courier-date-row .field {
+  margin-top: 0;
+}
+
+.courier-date-row > .field {
+  flex: 1;
+}
+
+.courier-date-row {
+  margin-bottom: 18px;
+}
+
+.courier-date-pane > .field {
+  margin-top: 0;
+}
+
+.courier-date-when {
+  align-items: center;
+}
+
+.courier-date-note {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.courier-date-source-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.courier-date-source-row .courier-date-input {
+  flex: 1;
+}
+
+.courier-date-source-row .courier-date-input input {
+  width: 100%;
+}
+
+.courier-date-source-row .courier-date-input .select,
+.courier-date-source-row .courier-date-input select {
+  width: 100%;
+}
+
+/* Field-source companions: [element type][date field] side by side */
+.courier-date-field-pair {
+  display: flex;
+  gap: 8px;
+}
+
+.courier-date-field-pair > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.courier-date-warning {
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+/* The conditions block nested under "Who gets it?" (fixed dates) keeps its
+   normal pane chrome — a padded white card inside the date pane. (Margins
+   live on the slot; core zeroes a first-child pane's own margins.) */

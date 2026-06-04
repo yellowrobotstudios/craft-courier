@@ -1,0 +1,63 @@
+{
+    "name": "yellowrobot/craft-courier",
+    "description": "Courier - event-driven notifications for Craft CMS, across email, Slack, Discord, SMS, and webhooks",
+    "type": "craft-plugin",
+    "license": "proprietary",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "email",
+        "notifications",
+        "slack",
+        "webhook",
+        "sms",
+        "transactional"
+    ],
+    "authors": [
+        {
+            "name": "Yellow Robot Studios",
+            "homepage": "https://yellowrobotstudios.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/yellowrobotstudios/craft-courier/issues",
+        "source": "https://github.com/yellowrobotstudios/craft-courier",
+        "docs": "https://github.com/yellowrobotstudios/craft-courier/blob/main/README.md"
+    },
+    "require": {
+        "php": "^8.2",
+        "craftcms/cms": "^5.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "yellowrobot\\courier\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "yellowrobot\\courier\\tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "handle": "courier",
+        "name": "Courier",
+        "developer": "Yellow Robot Studios",
+        "developerUrl": "https://yellowrobotstudios.com",
+        "documentationUrl": "https://github.com/yellowrobotstudios/craft-courier/blob/main/README.md",
+        "class": "yellowrobot\\courier\\Courier"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}

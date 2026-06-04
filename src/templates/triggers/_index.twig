@@ -1,0 +1,40 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Triggers' %}
+
+{% block actionButton %}
+    <a href="{{ url('courier/triggers/new') }}" class="btn submit add icon">New trigger</a>
+{% endblock %}
+
+{% block content %}
+    {% if triggers|length %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Handle</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trigger in triggers %}
+                    <tr>
+                        <td><a href="{{ trigger.getCpEditUrl() }}">{{ trigger.title }}</a></td>
+                        <td><code>{{ trigger.handle }}</code></td>
+                        <td><code>{{ trigger.eventTrigger }}</code></td>
+                        <td>
+                            {% if trigger.enabled %}
+                                <span class="status green"></span> Enabled
+                            {% else %}
+                                <span class="status red"></span> Disabled
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No triggers yet. <a href="{{ url('courier/triggers/new') }}">Create one</a> to start sending notifications on events.</p>
+    {% endif %}
+{% endblock %}

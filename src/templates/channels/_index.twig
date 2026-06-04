@@ -1,0 +1,41 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Channels' %}
+
+{% block actionButton %}
+    <a href="{{ url('courier/channels/new') }}" class="btn submit add icon">New channel</a>
+{% endblock %}
+
+{% block content %}
+    {% if configs|length %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Handle</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for config in configs %}
+                    {% set type = config.getChannelType() %}
+                    <tr>
+                        <td><a href="{{ url('courier/channels/' ~ config.id) }}">{{ config.name }}</a></td>
+                        <td>{{ type ? type.getName() : config.type }}</td>
+                        <td><code>{{ config.handle }}</code></td>
+                        <td>
+                            {% if config.enabled %}
+                                <span class="status green"></span> Enabled
+                            {% else %}
+                                <span class="status red"></span> Disabled
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No channels yet. <a href="{{ url('courier/channels/new') }}">Create one</a> to start sending.</p>
+    {% endif %}
+{% endblock %}
